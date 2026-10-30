@@ -19,7 +19,7 @@ dataSource=struct(...
     't',t); % t is a 1xm-sized datenum vector containing the time stamps
 
 % if using a file preprocessed in tofTools (note that tofTools package is needed to load the file)
-% dataSource='./data/paramEval1.h5';
+% dataSource='.\data\paramEval1.h5';
 
 %% Define the time range for the data to be analyzed
 
