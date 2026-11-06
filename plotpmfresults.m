@@ -44,12 +44,12 @@ for i=1:p
             if printMassTexts
                 if printOnlyHighestMassTexts==0
                     for iMass=1:length(mzs)
-                        text(mzs(iMass)+2,MS_final(i,iMass),compoundNames(iMass),'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',7,'Rotation',0)
+                        text(mzs(iMass)+2,double(MS_final(i,iMass)),compoundNames(iMass),'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',7,'Rotation',0)
                     end
                 else
                     [~,I]=sort(MS_final(i,:));
                     for iMass=I(end-printOnlyHighestMassTexts:end)
-                        text(mzs(iMass)+2,MS_final(i,iMass),compoundNames(iMass),'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',7,'Rotation',0)
+                        text(mzs(iMass)+2,double(MS_final(i,iMass)),compoundNames(iMass),'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',7,'Rotation',0)
                     end
         
                 end

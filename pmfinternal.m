@@ -2,15 +2,32 @@ function [TS_best,MS_best,dnorm_best] = pmfinternal(X,p,S,nDownWeighted,nReps,pm
 
 iterationloop = @iterationLoop;
 
-temp0=inf;
-for i = 1:nReps
-    temp1 = iterationloop(i);
+if isempty(gcp('nocreate'))
     
-    if temp1{1}<temp0
-        temp0=temp1{1};
-        bestResult=temp1;
+    % serial
+    temp0=inf;
+    for i = 1:nReps
+        temp1 = iterationloop(i);
+    
+        if temp1{1}<temp0
+            temp0=temp1{1};
+            bestResult=temp1;
+        end
     end
+else
+
+    % parallel
+    bestResults=cell(1,nReps);
+    bestResultsQ=nan(1,nReps);
+    parfor i = 1:nReps
+        out0 = feval(iterationloop,i);
+        bestResults{i}=out0;
+        bestResultsQ(i)=out0{1};
+    end
+    [~,I]=sort(bestResultsQ);
+    bestResult=bestResults{I};
 end
+
 
 dnorm_best = bestResult{1};
 TS_best = bestResult{3};

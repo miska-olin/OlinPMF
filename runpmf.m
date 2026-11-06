@@ -78,6 +78,9 @@ pRange = 2:6;
 % Type of the PMF computation algorithm ('ALS', 'MULT', 'ALS5MULT1', or 'PSPMF')
 pmfAlg = 'ALS5MULT1'; % default is 'ALS5MULT1', which means running alternating least squares (ALS) 5 times and then multiplicative solver (MULT) once
 
+% ALSxMULT1 algorithm supports parallel computation. Set this to 1 to enable.
+parallelALSxMULT1 = 0;
+
 % PSPMF-specific settings
 pspmfRepeats = {[5 1], [5 1], 1}; % numbers of repeats for algorithm inside PSPMF: {UMR normal time resolution run, bin lower time resolution run, bin normal time resolution run} 
 pspmfAlgs = {'AM', 'AM', 'M'}; % algorithms inside PSPMF: {UMR normal time resolution run, bin lower time resolution run, bin normal time resolution run} (A means ALS, M means MULT)
@@ -185,8 +188,9 @@ if initializeVariables %initializing required variables
             datasplitting2(end)=h5info(dataSource,'/tofData/signal').Dataspace.Size(2);
             toflength=h5info(dataSource,'/tofData/signal').Dataspace.Size(1);
             
+			hw2=waitbar(0,'Importing UMR and bin data');
             for iPart=1:length(datasplitting1)
-                hw2=waitbar(iPart/length(datasplitting1),'Importing UMR and bin data');
+                hw2=waitbar(iPart/length(datasplitting1),hw2,'Importing UMR and bin data');
                 
                 if iPart==length(datasplitting1)
                     linestoread=datasplitting2(end)-datasplitting1(end)+1;
@@ -323,7 +327,7 @@ if initializeVariables %initializing required variables
         timerange=timerange(timeIsOk); 
 
         if ~isempty(dataMatrix_bin)
-            dataMatrix_bin=dataMatrix_bin(timerange,:);
+            
             errorMatrix_bin=errorMatrix_bin(timerange,:);
         end
 
@@ -351,6 +355,7 @@ if initializeVariables %initializing required variables
         timerangeLowerTRes=timerangeLowerTRes(timeIsOk);
         if ~isempty(dataMatrix_bin)
             dataMatrixLowerTRes=smoothi(dataMatrix_bin,timeResolutionLoweringFactor);
+			dataMatrix_bin=dataMatrix_bin(timerange,:);
            
             % calculating the error matrix using the defined errorParameters
             % with the sqrt(errorParameter1^2*dataMatrix+errorParameter2^2) formula
@@ -475,6 +480,34 @@ unExplainedVariation_vec=[];
 p_vec=[];
 
 plotpmfstats
+
+% Start parallel pool using threads profile if not running, 
+% if requested for ALSxMULT1 algorithm
+if parallelALSxMULT1==1 
+    if length(pmfAlg)==9
+	    if useGPU
+            warning('Using GPU computation (useGPU=1) and parallel processing (parallelALSxMULT1=1) together is not recommended, because the benefit of one may be hindered by the another.')
+        end
+
+        if isempty(gcp('nocreate'))
+            parpool("Threads",str2double(pmfAlg(4)))
+        else
+            if isa(gcp,'parallel.ProcessPool')
+                warning('Switching parallel pool using processes profile to threads profile for lower memory usage.')
+                delete(gcp)
+                parpool("Threads",str2double(pmfAlg(4)))
+            else
+                if gcp().NumWorkers ~= str2double(pmfAlg(4))
+                    warning(['Parallel pool using ' int2str(gcp().NumWorkers) ' workers is used, but ' int2str(str2double(pmfAlg(4))) ' would be more optimized with ' pmfAlg ' algorithm.'])
+                end
+            end
+        end
+    end
+else
+    if ~isempty(gcp('nocreate'))
+        delete(gcp)
+    end
+end
 
 for p=pRange
     

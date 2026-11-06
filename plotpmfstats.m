@@ -13,7 +13,7 @@ xlabel('p')
 ylabel('Q/Qexp true')
 
 
-title('PMF computation running.\newlineClose this window to abort computation while keeping the current result.',FontWeight='normal',FontSize=8)
+title('PMF computation running.\newlineClose this window to abort computation while keeping the current result.','FontWeight','normal','FontSize',8)
 
 
 

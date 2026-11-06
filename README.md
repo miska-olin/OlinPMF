@@ -22,11 +22,11 @@ It is based on equation X=TS\*MS+R, where X is a data matrix, TS is time series 
 
 
 
-The minimization can be performed using different minimization algorithm, with the default being ALS5MULT1 algorithm, where alternating least squares algorithm is run with 5 different random seeds, and subsequently, a multiplicative solver, with the initial guess being the best of the 5 ALS-results, is used to output the final result.
+The minimization can be performed using different minimization algorithms, with the default being ALS5MULT1 algorithm, where alternating least squares (ALS) algorithm is run with 5 different random seeds, and subsequently, a multiplicative solver, with the initial guess being the best of the 5 ALS-results, is used to output the final result.
 
 
 
-Matrix operations employ Matlab's optimized matrix computation methods, such as internal QR-decomposition. Optionally, OlinPMF supports GPU-computation for the matrix operations, which can boost the computation in cases with large datasets and/or a powerful GPU.
+Matrix operations employ Matlab's optimized matrix computation methods, such as internal QR-decomposition. Optionally, OlinPMF supports GPU-computation for the matrix operations, which can boost the computation in cases with large datasets and/or a powerful GPU. Alternatively, parallel computing can be enable when using an ALSxMULT1 algorithm.
 
 
 
@@ -102,11 +102,9 @@ Once the new tofTools paramEval.h5 file has been written, you can open it using 
 
 After finding a suitable UMR-PMF solution in OlinPMF, the resulting TS\_final matrix contains the time series of the UMR-PMF factors.
 
-Those time series can be used to construct the RR-PMF solution using the Half-ALS algorithm. 
+Those time series can be used to construct the RR-PMF solution using the Half-ALS algorithm.
 
 Edit the parameters in RRPMF\_to\_tofTools.m file so that they correspond to the RR-PMF settings you want to use.
 
 Then run the 'RRPMF\_to\_tofTools' command and open it using tofTools 'tof\_gui\_eval\_params' function to post-process the RR-PMF factors' mass spectra (i.e., peak identification etc.).
-
-
 
