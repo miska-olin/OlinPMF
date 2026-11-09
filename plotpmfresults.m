@@ -109,29 +109,54 @@ if plotUnexpAsTime
 
 else
 
-    subplot(p,2,2:2:iCutPoint)
+    ax=[ax subplot(p,2,2:2:iCutPoint)];
 
-    denominator=zeros(size(MS_final,2),1);
-    for jP=1:length(denominator)
-        for iP=1:size(S,1)
-            temp = 0;
-            for hP=1:(p+nConstrainedFactors*involveConstrainedFactorsInQCalc)
-                if nConstrainedFactors==0
-                    temp=temp+TS_final(iP,hP)*MS_final(hP,jP);
-                else
-                    temp=temp+TS_final_con_full(iP,hP)*MS_final_con_full(hP,jP);
+
+    yyaxis left
+        denominator=zeros(size(MS_final,2),1);
+        for jP=1:length(denominator)
+            for iP=1:size(S,1)
+                temp = 0;
+                for hP=1:(p+nConstrainedFactors*involveConstrainedFactorsInQCalc)
+                    if nConstrainedFactors==0
+                        temp=temp+TS_final(iP,hP)*MS_final(hP,jP);
+                    else
+                        temp=temp+TS_final_con_full(iP,hP)*MS_final_con_full(hP,jP);
+                    end
                 end
+        
+                denominator(jP)=denominator(jP)+(temp+abs(E_final(iP,jP)))/S(iP,jP);
             end
-    
-            denominator(jP)=denominator(jP)+(temp+abs(E_final(iP,jP)))/S(iP,jP);
         end
-    end
-    numerator=sum(abs(E_final)./S,1);
-    bar(mzs+binWidth/2,100*numerator./denominator','BarWidth',1,'EdgeColor','k')
-    xlabel('m/z (Th)')
-    ylabel('Unexplained variation (%)')
+        numerator=sum(abs(E_final)./S,1);
+        bar(mzs+binWidth/2,100*numerator./denominator','BarWidth',1,'EdgeColor','none','FaceColor',[0.56 0.81 0.98])
+        xlabel('m/z (Th)')
+        ylabel('Unexplained variation (%)')
+
+        unExplainedVariation=sum(numerator)/sum(denominator);
+
+
+    yyaxis right
+        denominator=zeros(size(MS_final,2),1);
+        for jP=1:length(denominator)
+            for iP=1:size(S,1)
+                temp = 0;
+                for hP=1:(p+nConstrainedFactors*involveConstrainedFactorsInQCalc)
+                    if nConstrainedFactors==0
+                        temp=temp+TS_final(iP,hP)*MS_final(hP,jP);
+                    else
+                        temp=temp+TS_final_con_full(iP,hP)*MS_final_con_full(hP,jP);
+                    end
+                end
+        
+                denominator(jP)=denominator(jP)+(temp+abs(E_final(iP,jP)))/S(iP,jP);
+            end
+        end
+        numerator=sum(abs(E_final)./S,1);
+        bar(mzs+binWidth/2,(sum(min((E_final./S).^2,inf),1))/size(MS_final,1),'BarWidth',1,'EdgeColor','k')
+        ylabel('Q/Qexp(m/z)')
     
-    unExplainedVariation=sum(numerator)/sum(denominator);
+    
     title({['Q/Qexp = ' num2str(QQexp_final)  ' (robust: ' num2str(QQexp_robust_min) ', true: '  num2str(QQexp_true_min) ')'],['Unexplained variation = ' num2str( unExplainedVariation*100,3 ) '%']})
 
 
@@ -164,6 +189,8 @@ hold off
 
 if plotUnexpAsTime
     linkaxes(axTS,'x')
+else
+    linkaxes(ax,'x')
 end
 
 legend(legendNames)

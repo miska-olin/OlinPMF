@@ -313,7 +313,7 @@ if initializeVariables %initializing required variables
     %for normal time res
         timeIsOk=false(size(timerange));
         for ii=1:size(goodTimes,1)
-            I=tNormalTRes>=datenum(goodTimes(ii,1))-aveTimeMins/60/24&tNormalTRes<datenum(goodTimes(ii,2)); 
+            I=tNormalTRes>=datenum(goodTimes(ii,1)) & (tNormalTRes+aveTimeMins/60/24)<datenum(goodTimes(ii,2)); 
             timeIsOk(I)=true;
         end
 
