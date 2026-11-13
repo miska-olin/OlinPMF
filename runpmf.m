@@ -347,7 +347,7 @@ if initializeVariables %initializing required variables
     %for lower time res
         timeIsOk=false(size(timerangeLowerTRes));
         for ii=1:size(goodTimes,1)
-            I=tLowerTRes>=datenum(goodTimes(ii,1))-(aveTimeMins*timeResolutionLoweringFactor)/60/24&tLowerTRes<datenum(goodTimes(ii,2)); 
+            I=tLowerTRes>=datenum(goodTimes(ii,1)) & (tLowerTRes+aveTimeMins*timeResolutionLoweringFactor/60/24)<datenum(goodTimes(ii,2)); 
             timeIsOk(I)=true;
         end
 
@@ -359,7 +359,7 @@ if initializeVariables %initializing required variables
            
             % calculating the error matrix using the defined errorParameters
             % with the sqrt(errorParameter1^2*dataMatrix+errorParameter2^2) formula
-            errorMatrixLowerTRes=single(sqrt(errorParameter1_bin^2*max(dataMatrixLowerTRes,0)/sqrt(timeResolutionLoweringFactor) + errorParameter2_bin^2)); 
+            errorMatrixLowerTRes=single(sqrt(errorParameter1_bin^2*max(dataMatrixLowerTRes,0)/timeResolutionLoweringFactor + errorParameter2_bin^2)); 
     
             dataMatrixLowerTRes=dataMatrixLowerTRes(timerangeLowerTRes,:);
             tLowerTRes=tLowerTRes(timerangeLowerTRes);
